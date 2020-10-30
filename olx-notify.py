@@ -29,10 +29,14 @@ while True:
         new_data = scrape_olx(olx_url=olx_url)
 
         # check for new
-        existing_links = set(data['Link'].values)
-        new_links = set(data['Link'].values)
-        intersection = new_links.intersection(existing_links)
-        new_offers = new_data[~new_data['Link'].isin(intersection)]
+        # if there is no data just pass
+        try:
+            existing_links = set(data['Link'].values)
+            new_links = set(data['Link'].values)
+            intersection = new_links.intersection(existing_links)
+            new_offers = new_data[~new_data['Link'].isin(intersection)]
+        except:
+            new_offers = new_data
 
         if new_offers.shape[0] > 0: # if there is new 
             print(f'{now}: New offer(s) found!')
@@ -45,6 +49,7 @@ while True:
 
             # reload db
             new_data.to_feather(f'{session_name}.feather')
+            data = new_data
             data = pd.read_feather(f'{session_name}.feather')
         else:
             print(f'{now}: No new offers found.')
