@@ -9,7 +9,7 @@ You may need to change your gmal security settings to accepts simple logging in.
 
 Then you run script with:
 
->> python olx.notify.py [olx_url] [session_name] [send_from] [send_to]
+>> python olx-notify.py [olx_url] [session_name] [send_from] [send_to]
 
 where:
 - [olx_url] is a url with offers you search for. Jus go to olx.pl search for whatever you want, use filters you want and copy the url from web browser.
