@@ -7,7 +7,8 @@ import sys
 
 olx_url = sys.argv[1]
 session_name = sys.argv[2]
-send_to = sys.argv[3]
+send_from = sys.argv[3]
+send_to = sys.argv[4]
 
 
 # read data from db
@@ -16,6 +17,8 @@ try:
     data = pd.read_feather(f'{session_name}.feather')
 except:
     pass
+
+
 
 #%%
 while True:
@@ -35,7 +38,7 @@ while True:
             print(f'{now}: New offer(s) found!')
             # send main
             body = '\n\n'.join([ '\n'.join([row['Title'], row['Price'], row['Link']]) for __, row in new_offers.iterrows() ])
-            send_mail(send_from='python.notificaiton@gmail.com', 
+            send_mail(send_from=send_from, 
                 send_to=send_to,
                 subject='New OLX offer!!',
                 body=body)
