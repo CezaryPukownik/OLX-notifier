@@ -3,9 +3,19 @@ import pandas as pd
 from utils import send_mail, scrape_olx
 import time
 import datetime
+import sys
+
+olx_url = sys.argv[1]
+session_name = sys.argv[2]
+send_to = sys.argv[3]
+
 
 # read data from db
-data = pd.read_feather('focusrite.feather')
+# if there is no file just pass
+try:
+    data = pd.read_feather(f'{session_name}.feather')
+except:
+    pass
 
 #%%
 while True:
@@ -13,7 +23,6 @@ while True:
     try:
         # get new data
         print(f'{now}: Scraping OLX')
-        olx_url = 'https://www.olx.pl/oferty/q-focusrite-2i2/?search%5Bfilter_float_price%3Ato%5D=500'
         new_data = scrape_olx(olx_url=olx_url)
 
         # check for new
@@ -27,24 +36,18 @@ while True:
             # send main
             body = '\n\n'.join([ '\n'.join([row['Title'], row['Price'], row['Link']]) for __, row in new_offers.iterrows() ])
             send_mail(send_from='python.notificaiton@gmail.com', 
-                send_to='cezary.pukownik@gmail.com',
-                subject='Nowe ogłoszenie OLX!!',
+                send_to=send_to,
+                subject='New OLX offer!!',
                 body=body)
 
             # reload db
-            new_data.to_feather('focusrite.feather')
-            data = pd.read_feather('focusrite.feather')
+            new_data.to_feather(f'{session_name}.feather')
+            data = pd.read_feather(f'{session_name}.feather')
         else:
             print(f'{now}: No new offers found.')
             pass
     except KeyboardInterrupt:
         print(f'{now}: Interupted')
     
+    # sleep for 5 minutes
     time.sleep(5*60) # 5 min sleep
-
-#%%
-# uncoment for reset a db file
-# empty = pd.DataFrame(columns=['Title', 'Price', 'Link', 'Location', 'Date'])
-# new_offers.to_feather('focusrite.feather')
-# empty.to_feather('focusrite.feather')
-# %%
